@@ -1,7 +1,7 @@
 ##
 rm(list = ls())
 
-setwd("C:\\Users\\Luca Danese\\Desktop\\Change-Point-Clustering")
+setwd("")
 
 #--LIBRARIES--#
 
@@ -61,17 +61,17 @@ for(j_par in 1:nrow(matrix_parms)){
 	  data_sim <- t(scale(data_sim))
    
     res <- MainFunction(data = data_sim,
-	                    n_iterations = n_iterations_INPUT,
-					    B = matrix_parms[j_par,1], 
-						L = matrix_parms[j_par,2], 
-						q = 0.1, 
-						alpha = alpha_INPUT, 
-						OU_parameters = OU_parameters_INPUT)
+	                n_iterations = n_iterations_INPUT,
+			B = matrix_parms[j_par,1], 
+			L = matrix_parms[j_par,2], 
+			q = 0.1, 
+			alpha = alpha_INPUT, 
+			OU_parameters = OU_parameters_INPUT)
 									
-	path <- c("G:\\My Drive\\Dottorato\\Progetti\\Model Based Clustering of TS\\Simulazioni_TS\\11_07_2024\\")
+	path <- c("")
     
-    save(data, file = paste0(path,"11_07_2024_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
-    save(res,  file = paste0(path,"11_07_2024_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
+    save(data, file = paste0(path,"_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
+    save(res,  file = paste0(path,"_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
     
   }
 }
