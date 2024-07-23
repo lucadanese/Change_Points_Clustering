@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Danese"
+  given-names: "Luca"
+  orcid: "https://orcid.org/0000-0001-8444-8563"
+title: "Change Point Clustering"
+version: 1.0.0
+doi: 
+date-released: 2024-7-23
+url: "https://github.com/lucadanese/Change_Points_Clustering"
