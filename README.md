@@ -1,7 +1,7 @@
 # Change_Points_Clustering
 This repository contains the code for clustering both time series and survival functions with common change points. It is based on the paper ... and allows to replicate the results in it.
 
-The code is divided in two groups, those starting with TS (time series) and those starting with EPI (epidemiological). 
+The scripts are divided in two groups, those starting with *TS* are for time series data, while those starting with *EPI* are for epidemiological data. 
 
 ## Time series data 
 
