@@ -3,6 +3,8 @@ rm(list = ls())
 
 setwd("")
 
+set.seed(123)
+
 #--LIBRARIES--#
 
 library("Rcpp")
@@ -12,33 +14,22 @@ library("dplyr")
 library("doSNOW")
 library("purrr")
 library("tidyr")
-library("parallelRcppArmadillo")
 library("matrixStats")
 library("LaplacesDemon")
 library("MASS")
 library("data.table")
 
 #--PARAMETERS--#
-alpha_INPUT <- 1 
+alpha_INPUT <- 1
 n_iterations_INPUT <- 5000
 
 OU_parameters_INPUT <- list(
-  
-  m_0 = rep(0, 1),
-  
-  k_0 = 1,
-  
-  nu_0 = 10,
-  
-  phi_0 = diag(0.1, nrow = 1, ncol = 1),
   
   a = 1,
   
   b = 1,
   
   c = 0.1,
-  
-  nbasis = 1,
   
   gamma = 0.1
 )
@@ -52,7 +43,7 @@ parms_L <- c(1,25,100)
  
 matrix_parms <- expand.grid(parms_B,parms_L)
 
-for(j_par in 1:nrow(matrix_parms)){
+for(j_par in 9:9){
   
   for(rep in 1:50){
     
@@ -61,17 +52,17 @@ for(j_par in 1:nrow(matrix_parms)){
 	  data_sim <- t(scale(data_sim))
    
     res <- MainFunction(data = data_sim,
-	                n_iterations = n_iterations_INPUT,
-			B = matrix_parms[j_par,1], 
-			L = matrix_parms[j_par,2], 
-			q = 0.1, 
-			alpha = alpha_INPUT, 
-			OU_parameters = OU_parameters_INPUT)
+	          n_iterations = n_iterations_INPUT,
+					  B = matrix_parms[j_par,1], 
+						L = matrix_parms[j_par,2], 
+						q = 0.5, 
+						alpha = alpha_INPUT, 
+						OU_parameters = OU_parameters_INPUT)
 									
-	path <- c("")
+	  path <- c("")
     
-    save(data, file = paste0(path,"_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
-    save(res,  file = paste0(path,"_",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
+    save(data, file = paste0(path,"",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
+    save(res,  file = paste0(path,"",matrix_parms[j_par,1],"_" , matrix_parms[j_par,2],"_",rep))
     
   }
 }
