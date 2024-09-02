@@ -11,7 +11,7 @@ MainFunction <- function(data,
   # Perform clustering of time series with common change points. 
   #
   # Args: 
-  #	   data: A matrix where the rows are the observations and the columns the realisations of the time series. 
+  #    data: A matrix where the rows are the observations and the columns the realisations of the time series. 
   #    n_iterations: Number of iterations of the MCMC sampler. 
   #    B: Number of orders to sample for each observations in computing the normalisation constant. 
   #    L: Number of split-and-merge steps to perform when proposing a new orders. 
@@ -27,9 +27,13 @@ MainFunction <- function(data,
   n <- nrow(data)
   
   # generate initial partition 
-  number_starting_groups <- sample(1:n, 
-                                   size = 1, 
-                                   replace = FALSE)
+   number_starting_groups <- sample(1:n, 
+                                    size = 1, 
+                                    replace = FALSE)
+   
+   number_starting_groups <- n
+  
+ 
   
   partition_temp <- sample(c(1:number_starting_groups, 
                   sample(1:number_starting_groups, 
@@ -37,7 +41,13 @@ MainFunction <- function(data,
                          replace = TRUE)))
     
   partition_temp <- SortPartition(partition_temp)
-  orders_temp <- lapply(1:number_starting_groups, function(x) RandomPartition(t = maxT, p = 5/maxT))
+  orders_temp <- lapply(1:number_starting_groups, function(x) RandomPartition(t = maxT, p = 2/maxT))
+  
+  
+  for(i in 1:L){
+  orders_temp <- lapply(X = 1:length(orders_temp), 
+							function(x) SplitMergeAcceleration(y = matrix(data[which(partition_temp == x),], ncol = maxT), partition = orders_temp[[x]], 
+                                                                q = q, parms = OU_parameters, coarsening = coarsening))}
   
   ## DEFINE CLUSTER FOR PARALLEL COMPUTATION
   cluster <- parallel::makeCluster(parallel::detectCores()-1)
@@ -67,7 +77,7 @@ MainFunction <- function(data,
   
   partition_star_list_nc <- parLapply(1:B,
     cl = cluster,
-    fun = function(x) RandomPartition(t = maxT, p = 3/maxT)
+    fun = function(x) RandomPartition(t = maxT, p = 2/maxT)
   )
   
   print("Normalisation constant: computing...")
@@ -76,7 +86,7 @@ MainFunction <- function(data,
 
   grid <- expand.grid(1:nrow(comp_matrix), 1:ncol(comp_matrix))
 
-  parallel::clusterExport(cluster, varlist = c("partition_star_list_nc", "grid", "comp_matrix", "data", "LogLikelihood", "OU_parameters", "SplitDataPartition"), envir = environment())
+  parallel::clusterExport(cluster, varlist = c("partition_star_list_nc", "grid", "comp_matrix", "data", "LogLikelihood", "OU_parameters", "SplitDataPartition", "marginal_likelihood", "coarsening"), envir = environment())
   
   comp_matrix_2 <- matrix(unlist(parLapply(1:nrow(grid),
     cl = cluster,
@@ -140,7 +150,12 @@ MainFunction <- function(data,
         
       for(i in 1:2){
           
-          obs_sampled <- sample(S, 1, replace = TRUE)
+          if(length(split_list[[i]] >= 1)){
+            obs_sampled <- sample(split_list[[i]], 1, replace = FALSE)
+          } else {
+            obs_sampled <- split_list[[i]]
+          }
+          
           
       		proposal_partition_temp <- unlist(orders_temp[partition_temp[obs_sampled]])
   		
@@ -180,8 +195,8 @@ MainFunction <- function(data,
 										 t = maxT,  
 										 n = n, 
                      alpha = alpha, 
-										 split_i = S[which(allocation_index == 1)], 
-										 split_j = S[which(allocation_index == 2)], 
+										 split_i = split_list[[1]], 
+										 split_j = split_list[[2]], 
 										 norm_costs_row = norm_costs_row)
 
       if (log(runif(1)) <= alpha_split) {
@@ -207,7 +222,7 @@ MainFunction <- function(data,
       
     } else {
 
-	  S <- c(which(partition_temp == partition_temp[[ij[1]]]),which(partition_temp == partition_temp[[ij[2]]]))
+	    S <- c(which(partition_temp == partition_temp[[ij[1]]]),which(partition_temp == partition_temp[[ij[2]]]))
   
       order_i <- orders_temp[[partition_temp[[ij[1]]]]]
       order_j <- orders_temp[[partition_temp[[ij[2]]]]]
@@ -266,6 +281,7 @@ MainFunction <- function(data,
     partitions_matrix[iter,] <- partition_temp
     entropy_vector[iter] <- EntropyPartition(partition_temp)
     marg_likelihood[iter] <- sum(likelihood_temp)
+    #print(partition_temp)
 	
 	# REAL TIME DIAGNOSTIC #
     if(real_time_diagnostic == TRUE){
