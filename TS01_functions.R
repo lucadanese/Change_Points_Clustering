@@ -438,9 +438,6 @@ Indicator2 <- function(k, n) ifelse(k == n, 1, 0)
 
 Indicator3 <- function(k) ifelse(k == 1, 1, 0)
 
-
-## DA SISTEMARE
-
 marginal_likelihood <- function(y, a, b, c, gamma){
   
   if(length(y) != 1){
@@ -457,19 +454,6 @@ marginal_likelihood <- function(y, a, b, c, gamma){
   } else {
    Sj <- matrix(1,1,1)
   }
-  
-  # if(length(y) != 1){
-  #   Sj <- matrix(0, nrow = length(y), ncol = length(y))
-  #   diag(Sj) <- 1 + gamma^2
-  # 
-  #   Sj[lower.tri(Sj)] <- diag(-gamma,length(y)-1)[lower.tri(diag(-gamma,length(y)-1),diag = T)]
-  #   Sj[upper.tri(Sj)] <- diag(-gamma,length(y)-1)[upper.tri(diag(-gamma,length(y)-1),diag = T)]
-  # 
-  #   Sj[1,1] = 1
-  #   Sj[length(y),length(y)] = 1
-  # } else {
-  #   Sj <- matrix(1,1,1)
-  # }
   
   r1 <- (a * log(2*b * (1-gamma^2)) + lgamma(length(y)/2 + a)) - ((length(y)/2)*log(pi) + lgamma(a))
   
