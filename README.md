@@ -1,5 +1,5 @@
 # Change_Points_Clustering
-This repository contains the code for clustering both time series and survival functions with common change points. It is based on the paper ... and allows to replicate the results in it.
+This repository contains the code for replicating the code in the paper *Model-based clustering of time-dependent observations with common structural changes* by Corradin R., Danese L., KhudaBukhsh W.R. and Ongaro A. . 
 
 The scripts are divided in two groups, those starting with *TS* are for time series data, while those starting with *EPI* are for epidemiological data. 
 
